@@ -1,4 +1,5 @@
 from skimage.measure import compare_ssim
+from timeit import default_timer as timer
 
 
 def compute_ssim(im1, im2, win_size):
@@ -22,12 +23,12 @@ def compute_ssim(im1, im2, win_size):
 
     """
 
+    start = timer()
     if win_size % 2 != 1:
         print('Please provide an odd integer for the window size.')
     else:
         print("Computing Structural Similarity Index...")
-        #mean_ssim = compare_ssim(im1, im2, win_size=win_size, full=False)
         ssim = compare_ssim(im1, im2, win_size=win_size, full=True)
-        print("Computing Structural Similarity Index...Complete.")
+        end = timer()
+        print("Computing Structural Similarity Index...Complete. Elapsed Time: " + str((end - start)))
         return ssim
-

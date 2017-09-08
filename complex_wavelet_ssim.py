@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import signal
+from timeit import default_timer as timer
 
 
 def compute_cw_ssim(im1, im2, width):
@@ -16,7 +17,7 @@ def compute_cw_ssim(im1, im2, width):
     Returns:
       Computed CW-SSIM float value and map.
     """
-
+    start = timer()
     print("Computing Complex Wavelet SSIM...")
     # Define a width for the wavelet convolution
     widths = np.arange(1, width + 1)
@@ -56,7 +57,7 @@ def compute_cw_ssim(im1, im2, width):
     cw_ssim_map = (component_1 * component_2).reshape(im1.shape[0], im1.shape[1])
     # Average the per pixel results
     cw_ssim_index = round(np.average(cw_ssim_map), 3)
-
-    print("Computing Complex Wavelet SSIM...Complete.")
+    end = timer()
+    print("Computing Complex Wavelet SSIM...Complete. Elapsed Time [s]: " + str(end - start))
 
     return cw_ssim_index, cw_ssim_map

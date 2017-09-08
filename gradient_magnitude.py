@@ -1,8 +1,24 @@
 import numpy as np
 import cv2
+from timeit import default_timer as timer
 
 
 def convolve(image, kernel):
+    """ Perform Convolution on Image with a given kernel.
+
+    Parameters
+    ----------
+    image : ndarray
+        Image.  Any dimensionality.
+    kernel : ndarray
+        Kernel to convolve over image.
+
+    Returns
+    -------
+    output : ndarray
+        Convolved Image.
+    """
+
     # grab the spatial dimensions of the image, along with
     # the spatial dimensions of the kernel
     (iH, iW) = image.shape[:2]
@@ -41,9 +57,19 @@ def convolve(image, kernel):
 
 
 def compute_gms(im1, im2):
-    """
-    Return a map of Gradient Magnitude Similarity (GMS) and the global
-    GMS Deviation Index (GMSD).
+    """ Compute the Gradient Magnitude Similarity (GMS) and Deviation Index (GMSD) between two images.
+
+    Parameters
+    ----------
+    im1, im2 : ndarray
+        Image.  Any dimensionality.
+
+    Returns
+    -------
+    gms_index : float
+        The GMSD metric.
+    gms_map : ndarray
+        Gradient Similarity Map Image.
 
     Xue, W., Zhang, L., Mou, X., & Bovik, A. C. (2014).
     Gradient magnitude similarity deviation: A highly efficient perceptual
@@ -53,6 +79,7 @@ def compute_gms(im1, im2):
     """
 
     print("Computing Gradient Magnitude Similarity...")
+    start = timer()
     # Construct Prewitt kernels with values from literature
     h_x = [0.33, 0, -0.33, 0.33, 0, -0.33, 0.33, 0, -0.33]
     h_x = np.array(h_x).reshape(3, 3)
@@ -73,7 +100,7 @@ def compute_gms(im1, im2):
 
     gms_map = (2 * ref_grad_mag * dst_grad_mag + c) / (ref_grad_mag ** 2 + dst_grad_mag ** 2 + c)
     gms_index = np.sqrt(np.sum((gms_map - gms_map.mean()) ** 2) / gms_map.size)
-
-    print("Computing Gradient Magnitude Similarity...Complete.")
+    end = timer()
+    print("Computing Gradient Magnitude Similarity...Complete. Elapsed Time [s]: " + str(end - start))
 
     return gms_index, gms_map
