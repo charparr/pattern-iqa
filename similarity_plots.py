@@ -1,13 +1,15 @@
 import matplotlib.pyplot as plt
 
 
-def generate_plots(comparison):
+def generate_plots(depth, test):
 
-    plt.figure()
-    plt.imshow(comparison.mse_map)
-    plt.suptitle(comparison.cname)
-    plt.title('MSE: ' + str(comparison.mse))
-    plt.xlabel('m')
-    plt.ylabel('m')
+    fig = plt.figure()
+    ax1 = fig.add_subplot(112)
+    ax1.imshow(depth)
+    ax1.set_title('Normalized Snow Depth')
     plt.colorbar()
-    plt.savefig(comparison.results_dir + '/mse_map.png', dpi=300)
+
+    ax2 = fig.add_subplot(122)
+    ax2.imshow(test)
+    ax2.set_title('test')
+    plt.colorbar()
