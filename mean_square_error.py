@@ -15,5 +15,5 @@ def compute_mse(im1, im2):
     mse_value = round(compare_mse(im1, im2), 3)
     square_error_map = (im1 - im2) ** 2
     end = timer()
-    print("Computing Mean Square Error...Complete. Elapsed Time: [s]" + str((end - start)))
+    print("Computing Mean Square Error...Complete. Elapsed Time: [s] " + str((end - start)))
     return mse_value, square_error_map

@@ -74,6 +74,6 @@ def compute_fsim(im1, im2):
     pc_max = np.maximum(pc1, pc2)
     fsim = np.sum(s_total * pc_max) / np.sum(pc_max)
     end = timer()
-    print("Computing Feature Similarity...Complete. Elapsed Time: [s]" + str(end - start))
+    print("Computing Feature Similarity...Complete. Elapsed Time: [s] " + str(end - start))
 
     return fsim, pc_max
