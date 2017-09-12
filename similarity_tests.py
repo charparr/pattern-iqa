@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from hillshade import make_hillshade
-from slope import make_slope, make_std_slope
+from slope import make_slope, make_std_dem, make_std_slope, make_area_ratio
 from normalize import make_normalized_array
 from similarity_metrics import compute_similarity
 
@@ -17,7 +17,9 @@ if len(im1.shape) > 2:
     im1 = cv2.cvtColor(im1, cv2.COLOR_RGB2GRAY)
 
 slope = make_normalized_array(make_slope(dem))
-sd_slope = make_normalized_array(make_std_slope(slope, 5))
+sd_slope = make_normalized_array(make_std_slope(make_slope(dem), 5))
+sd_dem = make_std_dem(make_normalized_array(dem), 5)
+area_ratio = make_area_ratio(slope)
 shade0 = make_normalized_array(make_hillshade(dem, 0, 45))
 shade90 = make_normalized_array(make_hillshade(dem, 90, 45))
 shade180 = make_normalized_array(make_hillshade(dem, 180, 45))
@@ -27,9 +29,10 @@ shade135 = make_normalized_array(make_hillshade(dem, 135, 45))
 shade225 = make_normalized_array(make_hillshade(dem, 225, 45))
 shade315 = make_normalized_array(make_hillshade(dem, 315, 45))
 
-test_surfaces = [dem, slope, sd_slope, shade0, shade90, shade180, shade270, shade45, shade135, shade225, shade315]
-ids = ['dem', 'slope', 'sd_slope', 'shade0', 'shade90', 'shade180', 'shade360',
-       'shade45', 'shade135', 'shade225','shade315']
+test_surfaces = [slope, sd_slope, sd_dem, area_ratio, shade0, shade90, shade180,
+                 shade270, shade45, shade135, shade225, shade315]
+ids = ['slope', 'sd_slope', 'sd_dem', 'area_ratio', 'shade0', 'shade90', 'shade180', 'shade270',
+       'shade45', 'shade135', 'shade225', 'shade315']
 rows_list = []
 
 for surfs in zip(test_surfaces, ids):
@@ -39,10 +42,28 @@ for surfs in zip(test_surfaces, ids):
 
 df = pd.DataFrame(rows_list)
 df.set_index('id', inplace=True)
+df['MSE Rank'] = df['mse_value'].rank(ascending=True)
+df['SSIM Rank'] = df['ssim_value'].rank(ascending=False)
+df['CW-SSIM Rank'] = df['cw_ssim_value'].rank(ascending=False)
+df['GMSD Rank'] = df['gms_value'].rank(ascending=False)
+df['FSIM Rank'] = df['fsim_value'].rank(ascending=False)
+df['Avg. Rank'] = (df['MSE Rank'] + df['SSIM Rank'] + df['CW-SSIM Rank'] + df['GMSD Rank'] + df['FSIM Rank'])
+df.sort_values(['Avg. Rank'])
 
-print(df['mse_value'])
-print(df['ssim_value'])
-print(df['gsm_value'])
-print(df['cw_ssim_value'])
-print(df['fsim_value'])
+
+fig = plt.figure()
+
+ax = fig.add_subplot(3, 5, 1)
+ax.imshow(normed_depth)
+ax.set_title('depth')
+i = 2
+
+for im, title in zip(test_surfaces, ids):
+
+    ax = fig.add_subplot(3, 5, i)
+    ax.imshow(im)
+    ax.set_title(title + ' rank: ' + str(df.loc[title]['Avg. Rank']))
+    i += 1
+
+fig.show()
 
